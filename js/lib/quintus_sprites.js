@@ -1,7 +1,7 @@
 /*global Quintus:false */
 
 Quintus.Sprites = function(Q) {
- 
+
   // Create a new sprite sheet
   // Options:
   //  tilew - tile width
@@ -25,7 +25,7 @@ Quintus.Sprites = function(Q) {
         sy: 0
         });
       if(options) { Q._extend(this,options); }
-      this.cols = this.cols || 
+      this.cols = this.cols ||
                   Math.floor(this.w / this.tilew);
     },
 
@@ -84,7 +84,7 @@ Quintus.Sprites = function(Q) {
         halfW = p.w/2,
         halfH = p.h/2;
 
-    p.points = [ 
+    p.points = [
       [ -halfW, -halfH ],
       [  halfW, -halfH ],
       [  halfW,  halfH ],
@@ -97,11 +97,11 @@ Quintus.Sprites = function(Q) {
     if(!obj.c) { obj.c = { points: [] }; }
     var p = obj.p, c = obj.c;
 
-    if(!p.moved && 
+    if(!p.moved &&
        c.origX === p.x &&
        c.origY === p.y &&
        c.origScale === p.scale &&
-       c.origScale === p.angle) { 
+       c.origScale === p.angle) {
         return;
     }
 
@@ -114,7 +114,7 @@ Quintus.Sprites = function(Q) {
 
     var container = obj.container || Q._nullContainer;
 
-    // TODO: see if we care or if it's more 
+    // TODO: see if we care or if it's more
     // efficient just to do the calc each time
     c.x = container.matrix.transformX(p.x,p.y);
     c.y = container.matrix.transformY(p.x,p.y);
@@ -151,9 +151,9 @@ Quintus.Sprites = function(Q) {
 
     // TODO: Invoke moved on children
   };
-  
-  
-  
+
+
+
 // Properties:
   //    x
   //    y
@@ -162,7 +162,7 @@ Quintus.Sprites = function(Q) {
   //    frame
   Q.GameObject.extend("Sprite",{
     init: function(props,defaultProps) {
-      this.p = Q._extend({ 
+      this.p = Q._extend({
         x: 0,
         y: 0,
         z: 0,
@@ -174,7 +174,7 @@ Quintus.Sprites = function(Q) {
       this.matrix = new Q.Matrix2D();
       this.children = [];
 
-      Q._extend(this.p,props); 
+      Q._extend(this.p,props);
 
       this.size();
       this.p.id = this.p.id || Q._uniqueId();
@@ -187,7 +187,7 @@ Quintus.Sprites = function(Q) {
     // Resets the width, height and center based on the
     // asset or sprite sheet
     size: function(force) {
-      if(force || (!this.p.w || !this.p.h)) { 
+      if(force || (!this.p.w || !this.p.h)) {
         if(this.asset()) {
           this.p.w = this.asset().width;
           this.p.h = this.asset().height;
@@ -195,7 +195,7 @@ Quintus.Sprites = function(Q) {
           this.p.w = this.sheet().tilew;
           this.p.h = this.sheet().tileh;
         }
-      } 
+      }
 
       this.p.cx = (force || this.p.cx === void 0) ? (this.p.w / 2) : this.p.cx;
       this.p.cy = (force || this.p.cy === void 0) ? (this.p.h / 2) : this.p.cy;
@@ -217,7 +217,7 @@ Quintus.Sprites = function(Q) {
       if(!name) { return Q.sheet(this.p.sheet); }
 
       this.p.sheet = name;
-      if(resize) { 
+      if(resize) {
         this.size(true);
         Q._generatePoints(this,true);
       }
@@ -269,12 +269,12 @@ Quintus.Sprites = function(Q) {
         this.trigger('draw',ctx);
 
       ctx.restore();
-      
+
       // Children set up their own complete matrix
       // from the base stage matrix
       if(this.p.sort) { this.children.sort(this._sortChild); }
       Q._invoke(this.children,"render",ctx);
-      
+
       this.trigger('postdraw',ctx);
 
       if(Q.debug) { this.debugRender(ctx); }
@@ -322,7 +322,7 @@ Quintus.Sprites = function(Q) {
 
       ctx.restore();
 
-      if(this.c) { 
+      if(this.c) {
         var c = this.c;
         ctx.save();
           ctx.globalAlpha = 1;
@@ -356,7 +356,7 @@ Quintus.Sprites = function(Q) {
       this.matrix.identity();
 
       if(this.container) { this.matrix.multiply(this.container.matrix); }
-      
+
       this.matrix.translate(p.x,p.y);
 
       if(p.scale) { this.matrix.scale(p.scale,p.scale); }
