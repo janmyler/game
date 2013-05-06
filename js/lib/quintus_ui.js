@@ -14,9 +14,9 @@ Quintus.UI = function(Q) {
     ctx.lineTo(-rect.cx + rect.w - rect.radius, -rect.cy);
     ctx.quadraticCurveTo(-rect.cx + rect.w, -rect.cy, -rect.cx + rect.w, -rect.cy + rect.radius);
     ctx.lineTo(-rect.cx + rect.w, -rect.cy + rect.h - rect.radius);
-    ctx.quadraticCurveTo(-rect.cx + rect.w, 
-                         -rect.cy + rect.h, 
-                         -rect.cx + rect.w - rect.radius, 
+    ctx.quadraticCurveTo(-rect.cx + rect.w,
+                         -rect.cy + rect.h,
+                         -rect.cx + rect.w - rect.radius,
                          -rect.cy + rect.h);
     ctx.lineTo(-rect.cx + rect.radius, -rect.cy + rect.h);
     ctx.quadraticCurveTo(-rect.cx, -rect.cy + rect.h, -rect.cx, -rect.cy + rect.h - rect.radius);
@@ -33,12 +33,12 @@ Quintus.UI = function(Q) {
           match;
 
       if(p && Q._isString(p.w) && (match = p.w.match(/^[0-9]+%$/))) {
-        adjustedP.w = parseInt(p.w,10) * Q.width / 100;         
+        adjustedP.w = parseInt(p.w,10) * Q.width / 100;
         adjustedP.x = Q.width/2 - adjustedP.w/2;
       }
 
       if(p && Q._isString(p.h) && (match = p.h.match(/^[0-9]+%$/))) {
-        adjustedP.h = parseInt(p.h,10) * Q.height / 100;         
+        adjustedP.h = parseInt(p.h,10) * Q.height / 100;
         adjustedP.y = Q.height /2 - adjustedP.h/2;
       }
 
@@ -48,7 +48,7 @@ Quintus.UI = function(Q) {
         fill:   null, // Set to color to add background
         highlight:   null, // Set to color to for button
         radius: 5, // Border radius
-        stroke: "#000", 
+        stroke: "#000",
         border: false, // Set to a width to show a border
         shadow: false, // Set to true or a shadow offest
         shadowColor: false, // Set to a rgba value for the shadow
@@ -120,7 +120,7 @@ Quintus.UI = function(Q) {
 
     drawSquare: function(ctx) {
       this.addShadow(ctx);
-      if(this.p.fill) { 
+      if(this.p.fill) {
         ctx.fillRect(-this.p.cx,-this.p.cy,
                       this.p.w,this.p.h);
       }
@@ -145,7 +145,7 @@ Quintus.UI = function(Q) {
       }
       ctx.strokeStyle = this.p.stroke;
 
-      if(this.p.radius > 0) { 
+      if(this.p.radius > 0) {
         this.drawRadius(ctx);
       } else {
         this.drawSquare(ctx);
@@ -213,11 +213,11 @@ Quintus.UI = function(Q) {
       this.setFont(ctx);
       if(this.p.opacity !== void 0) { ctx.globalAlpha = this.p.opacity; }
       for(var i =0;i<this.splitLabel.length;i++) {
-        if(this.p.align === 'center') { 
+        if(this.p.align === 'center') {
           ctx.fillText(this.splitLabel[i],0,-this.p.cy + i * this.p.size * 1.2);
         } else if(this.p.align === 'right') {
           ctx.fillText(this.splitLabel[i],this.p.cx,-this.p.cy + i * this.p.size * 1.2);
-        } else { 
+        } else {
           ctx.fillText(this.splitLabel[i],-this.p.cx,-this.p.cy +i * this.p.size * 1.2);
         }
       }
@@ -357,7 +357,7 @@ Quintus.UI = function(Q) {
     },
 
     remove: function() {
-      if(this.iframe) { 
+      if(this.iframe) {
         Q.wrapper.removeChild(this.iframe);
         this.iframe = null;
       }
@@ -385,12 +385,12 @@ Quintus.UI = function(Q) {
     },
 
     step: function(dt) {
-      this._super(dt);
+      // this._super(dt);
       this.position();
     },
 
     remove: function() {
-      if(this.el) { 
+      if(this.el) {
         Q.wrapper.removeChild(this.el);
         this.el= null;
       }

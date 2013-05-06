@@ -14,9 +14,7 @@ Quintus.GameFigures = function(Q) {
 			this._super(p, {
 				sprite: 'character',
 				sheet: 'character',
-				x: 480,
-				y: -20,
-				gravity: 0.8,
+				gravity: 0.4,
 				points: [[-15,-25],[15,-25],[15,35],[-15,35]]
 			});
 
@@ -48,6 +46,8 @@ Quintus.GameFigures = function(Q) {
 			this._super(p, {
 				sprite: 'enemy',
 				sheet: 'enemy',
+				type: Q.SPRITE_ENEMY,
+				collisionMask: Q.SPRITE_ACTIVE | Q.SPRITE_DEFAULT,
 				vx: Math.floor(Math.random() * 201) + 100
 			});
 

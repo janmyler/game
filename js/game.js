@@ -31,17 +31,19 @@
 		})
 		.include([
 			'Sprites',
-			'Scenes',
-			'Input',
-			'2D',
 			'Anim',
-			'Touch',
+			'Audio',
+			'Scenes',
+			'2D',
+			'Input',
 			'UI',
+			'Touch',
 			'GameSprites',
 			'GameFigures',
 			'GameLevels'
 		])
-		.controls();
+		.enableSound()
+		.touch();
 
 	// Q.Sprite.extend('Player', {
 	// 	init: function(p) {
@@ -178,15 +180,43 @@
 		'character.png',
 		'cloud1.png',
 		'cloud2.png',
+		'moon.jpg',
 		'mountains.png',
 		'stars.png',
 		'tiles.png',
 		'waves.png',
 		'character.json',
-		'level1.json'
+		'level0.json',
+		'level1.json',
+		'music.mp3'
 	], function() {
 		document.getElementById('loading').style.display = 'none';
-		Q.stageScene('scene1');
+		// config controls
+		if (window.orientation !== undefined) {
+			Q.input.joypadControls({
+			  inputs: ['', 'right', '', 'left']
+			});
+
+			Q.input.touchControls({
+			  controls: [
+			    [],
+			    [],
+			    [],
+			    ['fire', 'F'],
+			    ['action', 'J'],
+			  ]
+			});
+		} else {
+			Q.input.keyboardControls();
+		}
+
+		// prepare the sheets
+		Q.sheet('tiles', 'tiles.png', { tilew: 64, tileh: 32 });
+		Q.compileSheets('character.png', 'character.json');
+
+		// show the entry scene
+		Q.stageScene('bgScene', 0);
+		Q.stageScene('mainMenu', 1);
 	}, {
 		progressCallback: function(loaded, total) {
 			var elem = document.getElementById('loading-progress');
@@ -194,5 +224,6 @@
 		}
 	});
 
+	window.Q = Q;
 	// Q.debug = true;
 })();
