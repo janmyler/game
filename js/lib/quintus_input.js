@@ -3,9 +3,9 @@
 Quintus.Input = function(Q) {
   var KEY_NAMES = { LEFT: 37, RIGHT: 39, SPACE: 32,
                     UP: 38, DOWN: 40,
-                    Z: 90, X: 88   
+                    Z: 90, X: 88
                   };
-  
+
   var DEFAULT_KEYS = { LEFT: 'left', RIGHT: 'right',
                        UP: 'up',     DOWN: 'down',
                        SPACE: 'fire',
@@ -109,7 +109,7 @@ Quintus.Input = function(Q) {
     },
 
     touchLocation: function(touch) {
-      var el = Q.el, 
+      var el = Q.el,
         posX = touch.offsetX,
         posY = touch.offsetY,
         touchX, touchY;
@@ -247,14 +247,14 @@ Quintus.Input = function(Q) {
           if(loc.x < joypad.zone) {
             joypad.joypadTouch = touch.identifier;
             joypad.centerX = loc.x;
-            joypad.centerY = loc.y; 
+            joypad.centerY = loc.y;
             joypad.x = null;
             joypad.y = null;
           }
         }
       };
 
-      
+
       this.joypadMove = function(e) {
         if(joypad.joypadTouch !== null) {
           var evt = e;
@@ -288,12 +288,12 @@ Quintus.Input = function(Q) {
                 if(triggers[k]) {
                   Q.inputs[actionName] = true;
 
-                  if(!joypad.triggers[k]) { 
+                  if(!joypad.triggers[k]) {
                     Q.input.trigger(actionName);
                   }
                 } else {
                   Q.inputs[actionName] = false;
-                  if(joypad.triggers[k]) { 
+                  if(joypad.triggers[k]) {
                     Q.input.trigger(actionName + "Up");
                   }
                 }
@@ -315,11 +315,11 @@ Quintus.Input = function(Q) {
         e.preventDefault();
       };
 
-      this.joypadEnd = function(e) { 
+      this.joypadEnd = function(e) {
           var evt = e;
 
           if(joypad.joypadTouch !== null) {
-            for(var i=0,len=evt.changedTouches.length;i<len;i++) { 
+            for(var i=0,len=evt.changedTouches.length;i<len;i++) {
             var touch = evt.changedTouches[i];
               if(touch.identifier === joypad.joypadTouch) {
                 for(var k=0;k<joypad.triggers.length;k++) {
@@ -359,7 +359,7 @@ Quintus.Input = function(Q) {
       Q._mouseMove = function(e) {
         e.preventDefault();
         var touch = e.touches ? e.touches[0] : e;
-        var el = Q.el, 
+        var el = Q.el,
             posX = touch.offsetX,
             posY = touch.offsetY,
             eX, eY,
@@ -405,7 +405,7 @@ Quintus.Input = function(Q) {
           ctx = Q.ctx;
 
       ctx.save();
-      ctx.textAlign = "center"; 
+      ctx.textAlign = "center";
       ctx.textBaseline = "middle";
 
       for(var i=0;i<keypad.controls.length;i++) {
@@ -418,7 +418,7 @@ Quintus.Input = function(Q) {
               key = Q.inputs[control[0]];
 
           ctx.fillStyle = keypad.color || "#FFFFFF";
-          ctx.globalAlpha = key ? 1.0 : 0.5;
+          ctx.globalAlpha = key ? 1.0 : 0.3;
           ctx.fillRect(x,y,keypad.size,keypad.size);
 
           ctx.fillStyle = keypad.text || "#000000";
@@ -439,7 +439,7 @@ Quintus.Input = function(Q) {
       ctx.beginPath();
       ctx.globalAlpha=joypad.alpha;
       ctx.fillStyle = color;
-      ctx.arc(x, y, size, 0, Math.PI*2, true); 
+      ctx.arc(x, y, size, 0, Math.PI*2, true);
       ctx.closePath();
       ctx.fill();
       ctx.restore();
@@ -475,7 +475,7 @@ Quintus.Input = function(Q) {
 
 
   });
-  
+
   Q.input = new Q.InputSystem();
 
   Q.controls = function(joypad) {
@@ -492,7 +492,7 @@ Quintus.Input = function(Q) {
 
     return Q;
   };
-  
+
 
   Q.component("platformerControls", {
     defaults: {
@@ -596,13 +596,13 @@ Quintus.Input = function(Q) {
         p.diffY = p.stepDistance;
       }
 
-      if(p.diffY || p.diffX ) { 
+      if(p.diffY || p.diffX ) {
         p.stepping = true;
         p.origX = p.x;
         p.origY = p.y;
         p.destX = p.x + p.diffX;
         p.destY = p.y + p.diffY;
-        p.stepWait = p.stepDelay; 
+        p.stepWait = p.stepDelay;
       }
 
     }

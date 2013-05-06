@@ -182,6 +182,7 @@
 		'cloud2.png',
 		'moon.jpg',
 		'mountains.png',
+		'mothership.png',
 		'stars.png',
 		'tiles.png',
 		'waves.png',
@@ -199,7 +200,6 @@
 
 			Q.input.touchControls({
 			  controls: [
-			    [],
 			    [],
 			    [],
 			    ['fire', 'F'],

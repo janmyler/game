@@ -46,7 +46,7 @@ Quintus.GameLevels = function(Q) {
 	// Background scene
 	Q.scene('bgScene', function(stage) {
 		var tiles = Q.createLevel('level0'),
-			character = new Q.Character({ vx: 90, x: Q.getX(tiles, 3) });
+			character = new Q.Character({ vx: 90, x: Q.getX(tiles, 2), y: Q.getY(tiles, 1) });
 
 		// add a simple bounce for the character
 		character.del('platformerControls');
@@ -139,14 +139,14 @@ Quintus.GameLevels = function(Q) {
 
 	Q.scene('level1', function(stage) {
 		var tiles = Q.createLevel('level1'),
-			character = new Q.Character({ x: Q.getX(tiles, 2) });
+			character = new Q.Character({ x: Q.getX(tiles, 21), y: Q.getY(tiles, 22) });
 
 		// background repeaters
 		stage.insert(new Q.Repeater({ asset: "stars.png", speedX: 0.1, speedY: 1 }));
-		stage.insert(new Q.StaticRepeater({ asset: "moon.jpg", speedX: 0.1, y: -180, repeatW: 9999 }));
-		stage.insert(new Q.StaticRepeater({ asset: "waves.png", speedX: 0.3, repeatW: 2000, y: -300 }));
-		stage.insert(new Q.StaticRepeater({ asset: "mountains.png", speedX: 0.4, y: 30 }));
-		stage.insert(new Q.StaticRepeater({ asset: "buildings.png", speedX: 0.7, y: -88, repeatW: 1800 }));
+		stage.insert(new Q.StaticRepeater({ asset: "moon.jpg", speedX: 0.1, y: Q.getY(tiles, 11), repeatW: 9999 }));
+		stage.insert(new Q.StaticRepeater({ asset: "waves.png", speedX: 0.2, repeatW: 3000, y: Q.getY(tiles, 6) }));
+		stage.insert(new Q.StaticRepeater({ asset: "mountains.png", speedX: 0.4, y: Q.getY(tiles, 20) }));
+		stage.insert(new Q.StaticRepeater({ asset: "buildings.png", speedX: 0.7, y: Q.getY(tiles, 18) + 24, repeatW: 1800 }));
 
 		// collision layer
 		stage.collisionLayer(tiles);
@@ -158,6 +158,7 @@ Quintus.GameLevels = function(Q) {
 		// TODO: add enemies
 
 		// powerups'n'stuff
+		stage.insert(new Q.Ship({ x: Q.getX(tiles, 19) + 0.5 * tiles.p.tileW, y: Q.getY(tiles, 19) + 0.5 * tiles.p.tileH }));
 		// TODO: add stuff
 	});
 

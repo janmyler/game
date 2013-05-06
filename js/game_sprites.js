@@ -83,4 +83,13 @@ Quintus.GameSprites = function(Q) {
 			);
 		}
 	});
+
+	Q.Sprite.extend('Ship', {
+		init: function(p) {
+			this._super(p, {
+				asset: 'mothership.png',
+				type: Q.SPRITE_DEFAULT
+			});
+		}
+	});
 };

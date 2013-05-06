@@ -1,3 +1,7 @@
+#quintus_container {
+	margin: 0 !important;
+}
+
 #quintus, body {
 	background: #222333;
 }
@@ -34,6 +38,7 @@
 		font-family: 'Segoe UI', sans-serif;
 		font-weight: bold;
 		line-height: 50px;
+		text-shadow: 1px 1px #355C09;
 	}
 }
 
