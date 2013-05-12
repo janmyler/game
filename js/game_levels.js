@@ -34,6 +34,13 @@ Quintus.GameLevels = function(Q) {
 		stage.add('viewport').follow(figure);
 	};
 
+	// adds flames on specified positions
+	Q.addFlames = function(stage, tiles, positions) {
+		for (var i = 0, len = positions.length; i < len; ++i) {
+			stage.insert(new Q.Flames(Q.getPos(tiles, positions[i][0], positions[i][1])));
+		}
+	};
+
 	// creates the collision layer for the specified level
 	Q.createLevel = function(level) {
 		var tiles = new Q.TileLayer({
@@ -144,9 +151,8 @@ Quintus.GameLevels = function(Q) {
 	Q.scene('hud', function(stage) {
 		var cont = stage.insert(new Q.UI.Container({
 			x: 55,
-			y: 35
-			// fill: 'rgba(0,0,0,.3)',
-			// border: 1
+			y: 35,
+			fill: 'rgba(0,0,0,.6)'
 		}));
 
 		// health status
@@ -170,7 +176,7 @@ Quintus.GameLevels = function(Q) {
 			w: 100,
 			size: 14,
 			color: '#8dc63f',
-			label: '12'
+			label: '0'
 		}));
 
 		// lives status
@@ -188,12 +194,14 @@ Quintus.GameLevels = function(Q) {
 			color: '#8dc63f',
 			label: Q.state.get('lives').toString()
 		}));
-		cont.fit(10);
+		cont.fit(6,10);
 	});
 
 	Q.scene('level1', function(stage) {
 		var tiles = Q.createLevel('level1'),
-			character = new Q.Character(Q.getPos(tiles, 12, 20));
+			character = new Q.Character(Q.getPos(tiles, 12, 20)),
+			enemy1 = new Q.Enemy(Q.getPos(tiles, 16, 26)),
+			enemy2 = new Q.Enemy(Q.getPos(tiles, 19, 26));
 
 		// background repeaters
 		stage.insert(new Q.Repeater({ asset: 'stars.png', speedX: 0.1, speedY: 1 }));
@@ -209,19 +217,18 @@ Quintus.GameLevels = function(Q) {
 		// signs'n'stuff
 		stage.insert(new Q.Sprite({ x: Q.getX(tiles, 24), y: Q.getY(tiles, 25), asset: 'alert_sign.png', type: Q.SPRITE_UI }));
 		stage.insert(new Q.Ship({ x: Q.getX(tiles, 11) + 0.5 * tiles.p.tileW, y: Q.getY(tiles, 20) + 0.5 * tiles.p.tileH }));
-		stage.insert(new Q.Flames(Q.getPos(tiles, 27, 28)));
-		stage.insert(new Q.Flames(Q.getPos(tiles, 28, 28)));
-		stage.insert(new Q.Flames(Q.getPos(tiles, 29, 28)));
+		Q.addFlames(stage, tiles, [[27,28],[28,28],[29,28],[30,28]]);
 
 		// character
 		Q.addFigure(stage, character);
 
 		// enemies
-		// TODO: add enemies
+		stage.insert(enemy1);
+		stage.insert(enemy2);
 
 		// powerups
-		stage.insert(new Q.Health(Q.getPos(tiles, 31, 27)));
-		// stage.insert(new Q.Ammo(Q.getPos(tiles, 27, 27)));
+		stage.insert(new Q.Health(Q.getPos(tiles, 32, 27)));
+		stage.insert(new Q.Ammo(Q.getPos(tiles, 35, 20)));
 	});
 
 	// TODO: further levels

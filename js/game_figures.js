@@ -9,8 +9,9 @@ Quintus.GameFigures = function(Q) {
 		'run_right_fire': { frames: [6, 7], rate: 1/4 },
 		'run_left_fire': { frames: [4, 5], rate: 1/4 },
 		'stand_right_fire': { frames: [6], loop: false },
-		'stand_left_fire': { frames: [4], loop: false }
-		// TODO: 'die': {}
+		'stand_left_fire': { frames: [4], loop: false },
+		'die_left': { frames: [8, 9, 10, 11], rate: 1/6, loop: false, trigger: "died" },
+		'die_right': { frames: [15, 14, 13, 12], rate: 1/6, loop: false, trigger: "died" }
 	});
 
 	// Character class
@@ -23,6 +24,7 @@ Quintus.GameFigures = function(Q) {
 				health: 100,
 				jumping: false,
 				burning: false,
+				dead: false,
 				points: [[-15,-25],[15,-25],[15,35],[-15,35]],
 				collisionMask: Q.SPRITE_DEFAULT | Q.SPRITE_ENEMY | Q.SPRITE_POWERUP
 			});
@@ -53,8 +55,19 @@ Quintus.GameFigures = function(Q) {
 
 			// stops the jumping mode
 			this.on('bump.bottom', this, 'landed');
+
+			// what to do when dead
+			this.on('died', function() {
+				Q.stage().pause();
+				Q.stageScene('gameOver', 2);
+			});
 		},
 		step: function(dt) {
+			// no more moves after death
+			if (this.p.dead) {
+				return;
+			}
+
 			// triggers the jumping mode
 			if (Q.inputs['up'] && !this.p.jumping) {
 				this.p.jumping = true;
@@ -75,9 +88,9 @@ Quintus.GameFigures = function(Q) {
 			this.p.burning = false;
 
 			// y axis check (when fallin' down as a rock)
-			if (this.p.y >= 1200) {
-				Q.stage().pause();
-				Q.stageScene('gameOver', 2);
+			if (this.p.y >= 1800 && !this.p.dead) {
+				this.p.dead = true;
+				this.play('die_' + this.p.direction);
 			}
 		},
 		landed: function() {
@@ -89,43 +102,56 @@ Quintus.GameFigures = function(Q) {
 				Q('HealthBar', 1).first().trigger('update.health', this.p.health);
 			} else {
 				// Zed's dead, baby... Zed's dead x___X
-				// this.play('die');
-				Q.stage().pause();
-				Q.stageScene('gameOver', 2);
+				if (!this.p.dead) {
+					this.play('die_' + this.p.direction);
+				}
+				this.p.dead = true;
 			}
 
 			// update ammo
 			Q('UI.Text', 1).first().p.label = this.p.ammo.toString();
-
 		}
 	});
 
 	// Enemy animations
 	Q.animations('enemy', {
-		// TODO: animations...
+		'walk_right': { frames: [12, 13, 14, 15, 16, 17], rate: 1/3 },
+		'walk_left': { frames: [6, 7, 8, 9, 10, 11], rate: 1/3 },
+		'right_fire': { frames: [1], loop: false },
+		'left_fire': { frames: [0], loop: false }
 	});
 
 	// Enemy class
 	Q.Sprite.extend('Enemy', {
 		init: function(p) {
 			this._super(p, {
+				health: 100,
 				sprite: 'enemy',
 				sheet: 'enemy',
 				type: Q.SPRITE_ENEMY,
+				points: [[-18,-43],[18,-43],[18,48],[-18,48]],
 				collisionMask: Q.SPRITE_ACTIVE | Q.SPRITE_DEFAULT,
-				vx: Math.floor(Math.random() * 201) + 100
+				vx: Math.floor(Math.random() * 101) + 50
 			});
 
-			this.add('2d, aiBounce');
+			this.add('2d, aiBounce, animation');
 
 			// TODO: events... collisions etc
+		},
+		step: function(dt) {
+			// moving animations
+			if (this.p.vx > 0) {
+				this.play('walk_right');
+			} else if (this.p.vx < 0) {
+				this.play('walk_left');
+			}
 		}
 	});
 
 	// Gun component
 	Q.component('gun', {
 		added: function() {
-			this.entity.p.ammo = 12;
+			this.entity.p.ammo = 0;
 		},
 		extend: {
 			fire: function() {

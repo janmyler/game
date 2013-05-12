@@ -148,7 +148,7 @@ Quintus.GameSprites = function(Q) {
 		}
 	});
 
-	// Healthbar sprite
+	// Health bar sprite
 	Q.Sprite.extend('HealthBar', {
 		init: function(p) {
 			this._super(p, {

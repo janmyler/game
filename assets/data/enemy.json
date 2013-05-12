@@ -1,0 +1,8 @@
+{
+	"enemy": {
+		"cols": 6,
+		"tilew": 48,
+		"tileh": 86,
+		"frames": 18
+	}
+}
