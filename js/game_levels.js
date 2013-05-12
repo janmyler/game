@@ -11,11 +11,18 @@ Quintus.GameLevels = function(Q) {
 	};
 
 	// returns x and y positions for specified tile
-	Q.getPos = function(tiles, row, col) {
+	Q.getPos = function(tiles, col, row) {
 		return {
 			x: Q.getX(tiles, col),
 			y: Q.getY(tiles, row)
 		};
+	};
+
+	// resets a game state
+	Q.initGame = function() {
+		Q.reset();
+		Q.state.set('lives', 3);
+		Q.state.set('level', 1);
 	};
 
 	// adds a figure/character into the stage and enables the viewport following
@@ -36,7 +43,17 @@ Quintus.GameLevels = function(Q) {
 		});
 
 		tiles.collidableTile = function(tileNum) {
-			var cTiles = [0, 1, 8, 9, 11, 15, 17, 19, 20, 21, 22, 23, 26, 27, 28];
+			var cTiles = [0, 1, 8, 9, 11, 15, 17, 19, 20, 21, 22, 23, 26, 27, 28, 29, 30, 31, 32, 33, 34];
+
+			// check for fire tiles collisions
+			// FIXME: it's kinda buggy
+			if (tileNum === 36 || tileNum === 37) {
+				Q('Character').first().trigger('burning');
+			}
+
+			// check for the AI invisible blocks collisions
+
+
 			return cTiles.indexOf(tileNum) < 0;
 		};
 
@@ -89,6 +106,7 @@ Quintus.GameLevels = function(Q) {
 		// button callbacks
 		butStart.on('click', function() {
 			Q.clearStages();
+			Q.initGame();
 			Q.stageScene('level1');
 			Q.stageScene('hud', 1);
 		});
@@ -98,7 +116,7 @@ Quintus.GameLevels = function(Q) {
 		});
 
 		// play audio
-		Q.audio.play('music.mp3', { loop: true });
+		// Q.audio.play('music.mp3', { loop: true });
 	});
 
 	// Help scene
@@ -134,22 +152,73 @@ Quintus.GameLevels = function(Q) {
 
 	// HUD scene
 	Q.scene('hud', function(stage) {
-		// TODO: HUD scene code
+		var cont = stage.insert(new Q.UI.Container({
+			x: 55,
+			y: 35
+			// fill: 'rgba(0,0,0,.3)',
+			// border: 1
+		}));
+
+		// health status
+		cont.insert(new Q.Sprite({
+			x: -16,
+			sheet: 'icons',
+			frame: 0
+		}));
+		cont.insert(new Q.HealthBar());
+
+		// ammo status
+		cont.insert(new Q.Sprite({
+			x: -16,
+			y: 22,
+			sheet: 'icons',
+			frame: 1
+		}));
+		cont.insert(new Q.UI.Text({
+			x: 16,
+			y: 22,
+			w: 100,
+			size: 14,
+			color: '#8dc63f',
+			label: '12'
+		}));
+
+		// lives status
+		cont.insert(new Q.Sprite({
+			x: -16,
+			y: 42,
+			sheet: 'icons',
+			frame: 2
+		}));
+		cont.insert(new Q.UI.Text({
+			x: 16,
+			y: 46,
+			w: 100,
+			size: 14,
+			color: '#8dc63f',
+			label: Q.state.get('lives').toString()
+		}));
+		cont.fit(10);
 	});
 
 	Q.scene('level1', function(stage) {
 		var tiles = Q.createLevel('level1'),
-			character = new Q.Character({ x: Q.getX(tiles, 21), y: Q.getY(tiles, 22) });
+			character = new Q.Character(Q.getPos(tiles, 12, 20));
 
 		// background repeaters
-		stage.insert(new Q.Repeater({ asset: "stars.png", speedX: 0.1, speedY: 1 }));
-		stage.insert(new Q.StaticRepeater({ asset: "moon.jpg", speedX: 0.1, y: Q.getY(tiles, 11), repeatW: 9999 }));
-		stage.insert(new Q.StaticRepeater({ asset: "waves.png", speedX: 0.2, repeatW: 3000, y: Q.getY(tiles, 6) }));
-		stage.insert(new Q.StaticRepeater({ asset: "mountains.png", speedX: 0.4, y: Q.getY(tiles, 20) }));
-		stage.insert(new Q.StaticRepeater({ asset: "buildings.png", speedX: 0.7, y: Q.getY(tiles, 18) + 24, repeatW: 1800 }));
+		stage.insert(new Q.Repeater({ asset: 'stars.png', speedX: 0.1, speedY: 1 }));
+		stage.insert(new Q.StaticRepeater({ asset: 'moon.jpg', speedX: 0.1, y: Q.getY(tiles, 11), repeatW: 9999 }));
+		stage.insert(new Q.StaticRepeater({ asset: 'waves.png', speedX: 0.2, repeatW: 3000, y: Q.getY(tiles, 6) }));
+		stage.insert(new Q.StaticRepeater({ asset: 'mountains.png', speedX: 0.4, y: Q.getY(tiles, 20) }));
+		stage.insert(new Q.StaticRepeater({ asset: 'buildings.png', speedX: 0.7, y: Q.getY(tiles, 18) + 24, repeatW: 1800 }));
+		stage.insert(new Q.StaticRepeater({ asset: 'underground.png', speedX: 0, y: Q.getY(tiles, 27) + 16 }));
 
 		// collision layer
 		stage.collisionLayer(tiles);
+
+		// signs'n'stuff
+		stage.insert(new Q.Sprite({ x: Q.getX(tiles, 24), y: Q.getY(tiles, 25), asset: 'alert_sign.png', type: Q.SPRITE_UI }));
+		stage.insert(new Q.Ship({ x: Q.getX(tiles, 11) + 0.5 * tiles.p.tileW, y: Q.getY(tiles, 20) + 0.5 * tiles.p.tileH }));
 
 		// character
 		Q.addFigure(stage, character);
@@ -157,10 +226,50 @@ Quintus.GameLevels = function(Q) {
 		// enemies
 		// TODO: add enemies
 
-		// powerups'n'stuff
-		stage.insert(new Q.Ship({ x: Q.getX(tiles, 19) + 0.5 * tiles.p.tileW, y: Q.getY(tiles, 19) + 0.5 * tiles.p.tileH }));
-		// TODO: add stuff
+		// powerups
+		stage.insert(new Q.Health(Q.getPos(tiles, 31, 27)));
+		// stage.insert(new Q.Ammo(Q.getPos(tiles, 27, 27)));
 	});
 
 	// TODO: further levels
+
+	// Game over scene
+	Q.scene('gameOver', function(stage) {
+		var cont = stage.insert(new Q.UI.Container({
+			x: Q.width / 2,
+			y: Q.height / 6,
+			fill: 'rgba(0,0,0,.4)',
+			border: 1
+		}));
+
+		cont.insert(new Q.UI.Text({
+			color: '#fff',
+			label: 'Arrgh, you\'re dead!'
+		}));
+
+		var butContinue = cont.insert(new Q.UI.Button({
+			x: 0, y: 50,
+			w: 160,
+			fill: '#fff',
+			label: Q.state.get('lives') ? 'Try again' : 'Start over',
+			highlight: '#acd373'
+		}));
+
+		stage.insert(cont);
+		cont.fit(20, 30);
+
+		butContinue.on('click', function() {
+			Q.clearStages();
+
+			if (Q.state.get('lives')) {
+				Q.state.dec('lives', 1);
+				Q.stageScene('level' + Q.state.get('level'));
+				Q.stageScene('hud', 1);
+			} else {
+				Q.initGame();
+				Q.stageScene('level1');
+				Q.stageScene('hud', 1);
+			}
+		});
+	});
 };

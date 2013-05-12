@@ -4,7 +4,7 @@
 //     For all details and documentation:
 //     http://html5quintus.com
 //
-// Quintus HTML5 Game Engine 
+// Quintus HTML5 Game Engine
 // =========================
 //
 // The code in `quintus.js` defines the base `Quintus()` method
@@ -14,7 +14,7 @@
 // canvas context. The engine has dependencies on Underscore.js and jQuery,
 // although the jQuery dependency will be removed in the future.
 //
-// Most of the game-specific functionality is in the 
+// Most of the game-specific functionality is in the
 // various other modules:
 //
 // * `quintus_input.js` - `Input` module, which allows for user input via keyboard and touchscreen
@@ -26,20 +26,20 @@
 // Engine Bootstrapping
 // ====================
 
-// Top-level Quintus engine factory wrapper, 
+// Top-level Quintus engine factory wrapper,
 // creates new instances of the engine by calling:
 //
 //      var Q = Quintus({  ...  });
 //
-// Any initial setup methods also all return the `Q` object, allowing any initial 
+// Any initial setup methods also all return the `Q` object, allowing any initial
 // setup calls to be chained together.
 //
 //      var Q = Quintus()
 //              .include("Input, Sprites, Scenes")
 //              .setup('quintus', { maximize: true })
 //              .controls();
-//                       
-// `Q` is used internally as the object name, and is used in most of the examples, 
+//
+// `Q` is used internally as the object name, and is used in most of the examples,
 // but multiple instances of the engine on the same page can have different names.
 //
 //     var Game1 = Quintus(), Game2 = Quintus();
@@ -49,15 +49,15 @@ var Quintus = function Quintus(opts) {
   // A la jQuery - the returned `Q` object is actually
   // a method that calls `Q.select`. `Q.select` doesn't do anything
   // initially, but can be overridden by a module to allow
-  // selection of game objects. The `Scenes` module adds in 
+  // selection of game objects. The `Scenes` module adds in
   // the select method which selects from the default stage.
   //
   //     var Q = Quintus().include("Sprites, Scenes");
   //     ... Game Code ...
   //     // Set the angry property on all Enemy1 class objects to true
   //     Q("Enemy1").p({ angry: true });
-  //     
-  var Q = function(selector,scope,options) {   
+  //
+  var Q = function(selector,scope,options) {
     return Q.select(selector,scope,options);
   };
 
@@ -206,7 +206,7 @@ var Quintus = function Quintus(opts) {
 
 
   // Basic detection method, returns the first instance where the
-  // iterator returns truthy. 
+  // iterator returns truthy.
   Q._detect = function(obj,iterator,context,arg1,arg2) {
     var result;
     if (obj == null) { return; }
@@ -268,7 +268,7 @@ var Quintus = function Quintus(opts) {
   Q._keys = Object.keys || function(obj) {
     if(Q._isObject(obj)) { throw new TypeError('Invalid object'); }
     var keys = [];
-    for (var key in obj) { if (Q._has(obj, key)) { keys[keys.length] = key; } } 
+    for (var key in obj) { if (Q._has(obj, key)) { keys[keys.length] = key; } }
     return keys;
   };
 
@@ -298,13 +298,13 @@ var Quintus = function Quintus(opts) {
 
   // Options
   // ========
-  
-  // Default engine options defining the paths 
+
+  // Default engine options defining the paths
   // where images, audio and other data files should be found
   // relative to the base HTML file. As well as a couple of other
   // options.
   //
-  // These can be overriden by passing in options to the `Quintus()` 
+  // These can be overriden by passing in options to the `Quintus()`
   // factory method, for example:
   //
   //     // Override the imagePath to default to /assets/images/
@@ -329,7 +329,7 @@ var Quintus = function Quintus(opts) {
 
 
   // By default the engine doesn't start a game loop until you actually tell it to.
-  // Usually the loop is started the first time you call `Q.stageScene`, but if you 
+  // Usually the loop is started the first time you call `Q.stageScene`, but if you
   // aren't using the `Scenes` module you can explicitly start the game loop yourself
   // and control **exactly** what the engine does each cycle. For example:
   //
@@ -338,26 +338,26 @@ var Quintus = function Quintus(opts) {
   //     var ball = new Q.Sprite({ .. });
   //
   //     Q.gameLoop(function(dt) {
-  //       Q.clear(); 
+  //       Q.clear();
   //       ball.step(dt);
   //       ball.draw(Q.ctx);
   //     });
   //
-  // The callback will be called with fraction of a second that has elapsed since 
+  // The callback will be called with fraction of a second that has elapsed since
   // the last call to the loop method.
   Q.gameLoop = function(callback) {
     Q.lastGameLoopFrame = new Date().getTime();
 
     // Short circuit the loop check in case multiple scenes
     // are staged immediately
-    Q.loop = true; 
+    Q.loop = true;
 
     // Keep track of the frame we are on (so that animations can be synced
     // to the next frame)
     Q._loopFrame = 0;
 
     // Wrap the callback to save it and standardize the passed
-    // in time. 
+    // in time.
     Q.gameLoopCallbackWrapper = function() {
       var now = new Date().getTime();
       Q._loopFrame++;
@@ -365,7 +365,7 @@ var Quintus = function Quintus(opts) {
       var dt = now - Q.lastGameLoopFrame;
       /* Prevent fast-forwarding by limiting the length of a single frame. */
       if(dt > Q.options.frameTimeLimit) { dt = Q.options.frameTimeLimit; }
-      callback.apply(Q,[dt / 1000]);  
+      callback.apply(Q,[dt / 1000]);
       Q.lastGameLoopFrame = now;
     };
 
@@ -377,7 +377,7 @@ var Quintus = function Quintus(opts) {
   // setInterval in your game, those will, of course, keep on rolling...
   Q.pauseGame = function() {
     if(Q.loop) {
-      window.cancelAnimationFrame(Q.loop); 
+      window.cancelAnimationFrame(Q.loop);
     }
     Q.loop = null;
   };
@@ -395,34 +395,34 @@ var Quintus = function Quintus(opts) {
   // ===============
   //
   // Quintus uses the Simple JavaScript inheritance Class object, created by
-  // John Resig and described on his blog: 
+  // John Resig and described on his blog:
   //
   // [http://ejohn.org/blog/simple-javascript-inheritance/](http://ejohn.org/blog/simple-javascript-inheritance/)
   //
   // The class is used wholesale, with the only differences being that instead
-  // of appearing in a top-level namespace, the `Class` object is available as 
+  // of appearing in a top-level namespace, the `Class` object is available as
   // `Q.Class` and a second argument on the `extend` method allows for adding
   // class level methods and the class name is passed in a parameter for introspection
   // purposes.
   //
   // Classes can be created by calling `Q.Class.extend(name,{ .. })`, although most of the time
   // you'll want to use one of the derivitive classes, `Q.Evented` or `Q.GameObject` which
-  // have a little bit of functionality built-in. `Q.Evented` adds event binding and 
+  // have a little bit of functionality built-in. `Q.Evented` adds event binding and
   // triggering support and `Q.GameObject` adds support for components and a destroy method.
   //
   // The main things Q.Class get you are easy inheritance, a constructor method called `init()`,
-  // dynamic addition of a this._super method when a method is overloaded (be careful with 
-  // this as it adds some overhead to method calls.) Calls to `instanceof` also all 
+  // dynamic addition of a this._super method when a method is overloaded (be careful with
+  // this as it adds some overhead to method calls.) Calls to `instanceof` also all
   // work as you'd hope.
   //
-  // By convention, classes should be added onto to the `Q` object and capitalized, so if 
+  // By convention, classes should be added onto to the `Q` object and capitalized, so if
   // you wanted to create a new class for your game, you'd write:
   //
   //     Q.Class.extend("MyClass",{ ... });
   //
   // Examples:
   //
-  //     Q.Class.extend("Bird",{ 
+  //     Q.Class.extend("Bird",{
   //       init: function(name) { this.name = name; },
   //       speak: function() { console.log(this.name); },
   //       fly: function()   { console.log("Flying"); }
@@ -442,10 +442,10 @@ var Quintus = function Quintus(opts) {
   //     randomBird.speak(); // Logs "Frank"
   //     pengy.speak();      // Logs "Pengy the penguin"
   //
-  //     console.log(randomBird instanceof Q.Bird);    // true 
+  //     console.log(randomBird instanceof Q.Bird);    // true
   //     console.log(randomBird instanceof Q.Penguin); // false
-  //     console.log(pengy instanceof Q.Bird);         // true 
-  //     console.log(pengy instanceof Q.Penguin);      // true 
+  //     console.log(pengy instanceof Q.Bird);         // true
+  //     console.log(pengy instanceof Q.Penguin);      // true
 
 
   /* Simple JavaScript Inheritance
@@ -455,7 +455,7 @@ var Quintus = function Quintus(opts) {
    * Inspired by base2 and Prototype
    */
   (function(){
-    var initializing = false, 
+    var initializing = false,
         fnTest = /xyz/.test(function(){ var xyz;}) ? /\b_super\b/ : /.*/;
     /* The base Class implementation (does nothing) */
     Q.Class = function(){};
@@ -464,7 +464,7 @@ var Quintus = function Quintus(opts) {
     Q.Class.prototype.isA = function(className) {
       return this.className === className;
     };
-    
+
     /* Create a new Class that inherits from this class */
     Q.Class.extend = function(className, prop, classMethods) {
       /* No name, don't add onto Q */
@@ -475,7 +475,7 @@ var Quintus = function Quintus(opts) {
       }
       var _super = this.prototype,
           ThisClass = this;
-      
+
       /* Instantiate a base class (but only create the instance, */
       /* don't run the init constructor) */
       initializing = true;
@@ -492,7 +492,7 @@ var Quintus = function Quintus(opts) {
 
           /* The method only need to be bound temporarily, so we */
           /* remove it when we're done executing */
-          var ret = fn.apply(this, arguments);        
+          var ret = fn.apply(this, arguments);
           this._super = tmp;
 
           return ret;
@@ -502,13 +502,13 @@ var Quintus = function Quintus(opts) {
       /* Copy the properties over onto the new prototype */
       for (var name in prop) {
         /* Check if we're overwriting an existing function */
-        prototype[name] = typeof prop[name] === "function" && 
-          typeof _super[name] === "function" && 
-            fnTest.test(prop[name]) ? 
-              _superFactory(name,prop[name]) : 
+        prototype[name] = typeof prop[name] === "function" &&
+          typeof _super[name] === "function" &&
+            fnTest.test(prop[name]) ?
+              _superFactory(name,prop[name]) :
               prop[name];
       }
-      
+
       /* The dummy class constructor */
       function Class() {
         /* All construction is actually done in the init method */
@@ -516,21 +516,21 @@ var Quintus = function Quintus(opts) {
           this.init.apply(this, arguments);
         }
       }
-      
+
       /* Populate our constructed prototype object */
       Class.prototype = prototype;
-      
+
       /* Enforce the constructor to be what we expect */
       Class.prototype.constructor = Class;
       /* And make this class extendable */
       Class.extend = Q.Class.extend;
-      
+
       /* If there are class-level Methods, add them to the class */
       if(classMethods) {
         Q._extend(Class,classMethods);
       }
 
-      if(className) { 
+      if(className) {
         /* Save the class onto Q */
         Q[className] = Class;
 
@@ -538,16 +538,16 @@ var Quintus = function Quintus(opts) {
         Class.prototype.className = className;
         Class.className = className;
       }
-      
+
       return Class;
     };
   }());
-    
+
 
   // Event Handling
   // ==============
 
-  // The `Q.Evented` class adds event handling onto the base `Q.Class` 
+  // The `Q.Evented` class adds event handling onto the base `Q.Class`
   // class. Evented objects can trigger events and other objects can
   // bind to those events.
   Q.Class.extend("Evented",{
@@ -585,13 +585,13 @@ var Quintus = function Quintus(opts) {
       // To keep `Q.Evented` objects from needing a constructor,
       // the `listeners` object is created on the fly as needed.
       // `listeners` keeps a list of callbacks indexed by event name
-      // for quick lookup. 
+      // for quick lookup.
       this.listeners = this.listeners || {};
       this.listeners[event] = this.listeners[event] || [];
       this.listeners[event].push([ target || this, callback]);
 
       // With a provided target, the target object keeps track of
-      // the events it is bound to, which allows for automatic 
+      // the events it is bound to, which allows for automatic
       // unbinding on destroy.
       if(target) {
         if(!target.binds) { target.binds = []; }
@@ -600,7 +600,7 @@ var Quintus = function Quintus(opts) {
     },
 
     // Triggers an event, passing in some optional additional data about
-    // the event. 
+    // the event.
     trigger: function(event,data) {
       // First make sure there are any listeners, then check for any listeners
       // on this specific event, if not, early out.
@@ -613,8 +613,8 @@ var Quintus = function Quintus(opts) {
         }
       }
     },
-    
-    // Unbinds an event. Can be called with 1, 2, or 3 parameters, each 
+
+    // Unbinds an event. Can be called with 1, 2, or 3 parameters, each
     // of which unbinds a more specific listener.
     off: function(event,target,callback) {
       // Without a target, remove all teh listeners.
@@ -661,7 +661,7 @@ var Quintus = function Quintus(opts) {
    });
 
 
-   
+
   // Components
   // ==============
   //
@@ -678,8 +678,8 @@ var Quintus = function Quintus(opts) {
   Q.components = {};
 
   // The base class for components. These are usually not derived directly but are instead
-  // created by calling `Q.register` to register a new component given a set of methods the 
-  // component supports. Components are created automatically when they are added to a 
+  // created by calling `Q.register` to register a new component given a set of methods the
+  // component supports. Components are created automatically when they are added to a
   // `Q.GameObject` with the `add` method.
   //
   // Many components also define an `added` method, which is called automatically by the
@@ -688,8 +688,8 @@ var Quintus = function Quintus(opts) {
   Q.Evented.extend("Component",{
 
     // Components are created when they are added onto a `Q.GameObject` entity. The entity
-    // is directly extended with any methods inside of an `extend` property and then the 
-    // component itself is added onto the entity as well. 
+    // is directly extended with any methods inside of an `extend` property and then the
+    // component itself is added onto the entity as well.
     init: function(entity) {
       this.entity = entity;
       if(this.extend) { Q._extend(entity,this.extend);   }
@@ -700,12 +700,12 @@ var Quintus = function Quintus(opts) {
       if(entity.stage && entity.stage.addToList) {
         entity.stage.addToList(this.componentName,entity);
       }
-      if(this.added) { this.added(); }    
+      if(this.added) { this.added(); }
     },
 
-    // `destroy` is called automatically when a component is removed from an entity. It is 
+    // `destroy` is called automatically when a component is removed from an entity. It is
     // not called, however, when an entity is destroyed (for performance reasons).
-    // 
+    //
     // It's job is to remove any methods that were added with `extend` and then remove and
     // debind itself from the entity. It will also call `destroyed` if the component has
     // a method by that name.
@@ -718,7 +718,7 @@ var Quintus = function Quintus(opts) {
       }
       delete this.entity[this.name];
       var idx = this.entity.activeComponents.indexOf(this.componentName);
-      if(idx !== -1) { 
+      if(idx !== -1) {
         this.entity.activeComponents.splice(idx,1);
 
         if(this.entity.stage && this.entity.stage.addToList) {
@@ -730,7 +730,7 @@ var Quintus = function Quintus(opts) {
     }
   });
 
-  // This is the base class most Quintus objects are derived from, it extends 
+  // This is the base class most Quintus objects are derived from, it extends
   // `Q.Evented` and adds component support to an object, allowing components to
   // be added and removed from an object. It also defines a destroyed method
   // which will debind the object, remove it from it's parent (usually a scene)
@@ -740,11 +740,11 @@ var Quintus = function Quintus(opts) {
     // Simple check to see if a component already exists
     // on an object by searching for a property of the same name.
     has: function(component) {
-      return this[component] ? true : false; 
+      return this[component] ? true : false;
     },
 
 
-    // Adds one or more components to an object. Accepts either 
+    // Adds one or more components to an object. Accepts either
     // a comma separated string or an array of strings that map
     // to component names.
     //
@@ -759,13 +759,13 @@ var Quintus = function Quintus(opts) {
       for(var i=0,len=components.length;i<len;i++) {
         var name = components[i],
             Comp = Q.components[name];
-        if(!this.has(name) && Comp) { 
-          var c = new Comp(this); 
+        if(!this.has(name) && Comp) {
+          var c = new Comp(this);
           this.trigger('addComponent',c);
         }
       }
       return this;
-    }, 
+    },
 
     // Removes one or more components from an object. Accepts the
     // same style of parameters as `add`. Triggers a delComponent event
@@ -776,9 +776,9 @@ var Quintus = function Quintus(opts) {
       components = Q._normalizeArg(components);
       for(var i=0,len=components.length;i<len;i++) {
         var name = components[i];
-        if(name && this.has(name)) { 
+        if(name && this.has(name)) {
           this.trigger('delComponent',this[name]);
-          this[name].destroy(); 
+          this[name].destroy();
         }
       }
       return this;
@@ -799,7 +799,7 @@ var Quintus = function Quintus(opts) {
     }
   });
 
-  // This registers a component with the engine, making it available to `Q.GameObject`'s 
+  // This registers a component with the engine, making it available to `Q.GameObject`'s
   // This creates a new descendent class of `Q.Component` with new methods added in.
   Q.component = function(name,methods) {
     if(!methods) { return Q.components[name]; }
@@ -816,10 +816,10 @@ var Quintus = function Quintus(opts) {
   //     Q.reset({ score: 0, lives: 2 });
   //
   // Then in your game might want to add to the score:
-  //     
+  //
   //      Q.state.inc("score",50);
   //
-  // In your hud, you can listen for change events on the state to update your 
+  // In your hud, you can listen for change events on the state to update your
   // display:
   //
   //      Q.state.on("change.score",function() { .. update the score display .. });
@@ -832,7 +832,7 @@ var Quintus = function Quintus(opts) {
 
     // Resets the state to value p
     reset: function(p) { this.init(p); this.trigger("reset"); },
-    
+
     // Internal helper method to set an individual property
     _triggerProperty: function(value,key) {
       if(this.p[key] !== value) {
@@ -878,7 +878,7 @@ var Quintus = function Quintus(opts) {
   // Canvas Methods
   // ==============
   //
-  // The `setup` and `clear` method are the only two canvas-specific methods in 
+  // The `setup` and `clear` method are the only two canvas-specific methods in
   // the core of Quintus. `imageData`  also uses canvas but it can be used in
   // any type of game.
 
@@ -898,7 +898,7 @@ var Quintus = function Quintus(opts) {
   // TODO: add support for auto-resize w/ engine event notifications, remove
   // jQuery.
 
-  Q.touchDevice = ('ontouchstart' in document);
+  Q.touchDevice = window.orientation !== undefined;
 
   Q.setup = function(id, options) {
     if(Q._isObject(id)) {
@@ -959,8 +959,8 @@ var Quintus = function Quintus(opts) {
       Q.el.height = h * 2;
     }
     else if(((resampleWidth && w > resampleWidth) ||
-        (resampleHeight && h > resampleHeight)) && 
-       Q.touchDevice) { 
+        (resampleHeight && h > resampleHeight)) &&
+       Q.touchDevice) {
       Q.el.style.height = h + "px";
       Q.el.style.width = w + "px";
       Q.el.width = w / 2;
@@ -985,10 +985,10 @@ var Quintus = function Quintus(opts) {
       elParent.insertBefore(Q.wrapper,Q.el);
       Q.wrapper.appendChild(Q.el);
     }
-    
+
     Q.el.style.position = 'relative';
 
-    Q.ctx = Q.el.getContext && 
+    Q.ctx = Q.el.getContext &&
             Q.el.getContext("2d");
 
 
@@ -1020,7 +1020,7 @@ var Quintus = function Quintus(opts) {
   // Return canvas image data given an Image object.
   Q.imageData = function(img) {
     var canvas = document.createElement("canvas");
-    
+
     canvas.width = img.width;
     canvas.height = img.height;
 
@@ -1030,16 +1030,16 @@ var Quintus = function Quintus(opts) {
     return ctx.getImageData(0,0,img.width,img.height);
   };
 
-  
+
 
   // Asset Loading Support
   // =====================
   //
   // The engine supports loading assets of different types using
-  // `load` or `preload`. Assets are stored by their name so the 
+  // `load` or `preload`. Assets are stored by their name so the
   // same asset won't be loaded twice if it already exists.
 
-  // Augmentable list of asset types, loads a specific asset 
+  // Augmentable list of asset types, loads a specific asset
   // type if the file type matches, otherwise defaults to a Ajax
   // load of the data.
   //
@@ -1047,7 +1047,7 @@ var Quintus = function Quintus(opts) {
   // adding to `assetTypes` and adding a method called
   // loadAssetTYPENAME where TYPENAME is the name of the
   // type you added in.
-  Q.assetTypes = { 
+  Q.assetTypes = {
     png: 'Image', jpg: 'Image', gif: 'Image', jpeg: 'Image',
     ogg: 'Audio', wav: 'Audio', m4a: 'Audio', mp3: 'Audio'
   };
@@ -1070,7 +1070,7 @@ var Quintus = function Quintus(opts) {
     return fileType || 'Other';
   };
 
-  // Either return an absolute URL, 
+  // Either return an absolute URL,
   // or add a base to a relative URL
   Q.assetUrl = function(base,url) {
     if(/^https?:\/\//.test(url) || url[0] === "/") {
@@ -1080,7 +1080,7 @@ var Quintus = function Quintus(opts) {
     }
   };
 
-  // Loader for Images, creates a new `Image` object and uses the 
+  // Loader for Images, creates a new `Image` object and uses the
   // load callback to determine the image has been loaded
   Q.loadAssetImage = function(key,src,callback,errorCallback) {
     var img = new Image();
@@ -1090,10 +1090,10 @@ var Quintus = function Quintus(opts) {
   };
 
 
-  // List of mime types given an audio file extension, used to 
-  // determine what sound types the browser can play using the 
+  // List of mime types given an audio file extension, used to
+  // determine what sound types the browser can play using the
   // built-in `Sound.canPlayType`
-  Q.audioMimeTypes = { mp3: 'audio/mpeg', 
+  Q.audioMimeTypes = { mp3: 'audio/mpeg',
                        ogg: 'audio/ogg; codecs="vorbis"',
                        m4a: 'audio/m4a',
                        wav: 'audio/wav' };
@@ -1104,16 +1104,16 @@ var Quintus = function Quintus(opts) {
     var snd = new Audio();
 
     /* Find a supported type */
-    return Q._audioAssetPreferredExtension = 
+    return Q._audioAssetPreferredExtension =
       Q._detect(Q.options.audioSupported,
          function(extension) {
-         return snd.canPlayType(Q.audioMimeTypes[extension]) ? 
+         return snd.canPlayType(Q.audioMimeTypes[extension]) ?
                                 extension : null;
       });
   };
 
-  // Loader for Audio assets. By default chops off the extension and 
-  // will automatically determine which of the supported types is 
+  // Loader for Audio assets. By default chops off the extension and
+  // will automatically determine which of the supported types is
   // playable by the browser and load that type.
   //
   // Which types are available are determined by the file extensions
@@ -1138,9 +1138,9 @@ var Quintus = function Quintus(opts) {
     snd.addEventListener("error",errorCallback);
 
     // Don't wait for canplaythrough on mobile
-    if(!Q.touchDevice) { 
-      snd.addEventListener('canplaythrough',function() { 
-        callback(key,snd); 
+    if(!Q.touchDevice) {
+      snd.addEventListener('canplaythrough',function() {
+        callback(key,snd);
       });
     }
     snd.src =  Q.assetUrl(Q.options.audioPath,baseName + "." + extension);
@@ -1216,13 +1216,13 @@ var Quintus = function Quintus(opts) {
 
   // Load assets, and call our callback when done.
   //
-  // Also optionally takes a `progressCallback` which will be called 
+  // Also optionally takes a `progressCallback` which will be called
   // with the number of assets loaded and the total number of assets
-  // to allow showing of a progress. 
+  // to allow showing of a progress.
   //
   // Assets can be passed in as an array of file names, and Quintus
-  // will use the file names as the name for reference, or as a hash of 
-  // `{ name: filename }`. 
+  // will use the file names as the name for reference, or as a hash of
+  // `{ name: filename }`.
   //
   // Example usage:
   //     Q.load(['sprites.png','sprites.,json'],function() {
@@ -1251,7 +1251,7 @@ var Quintus = function Quintus(opts) {
 
     /* If the user passed in an array, convert it */
     /* to a hash with lookups by filename */
-    if(Q._isArray(assets)) { 
+    if(Q._isArray(assets)) {
       Q._each(assets,function(itm) {
         if(Q._isObject(itm)) {
           Q._extend(assetObj,itm);
@@ -1283,8 +1283,8 @@ var Quintus = function Quintus(opts) {
         assetsRemaining--;
 
         /* Update our progress if we have it */
-        if(progressCallback) { 
-           progressCallback(assetsTotal - assetsRemaining,assetsTotal); 
+        if(progressCallback) {
+           progressCallback(assetsTotal - assetsRemaining,assetsTotal);
         }
       }
 
@@ -1293,7 +1293,7 @@ var Quintus = function Quintus(opts) {
       if(assetsRemaining === 0 && callback) {
         /* if we haven't set up our canvas element yet, */
         /* assume we're using a canvas with id 'quintus' */
-        callback.apply(Q); 
+        callback.apply(Q);
       }
     };
 
@@ -1319,10 +1319,10 @@ var Quintus = function Quintus(opts) {
 
   };
 
-  // Array to store any assets that need to be 
+  // Array to store any assets that need to be
   // preloaded
   Q.preloads = [];
-  
+
   // Let us gather assets to load at a later time,
   // and then preload them all at the same time with
   // a single callback. Options are passed through to the
@@ -1360,8 +1360,8 @@ var Quintus = function Quintus(opts) {
   };
 
   // A 2D matrix class, optimized for 2D points,
-  // where the last row of the matrix will always be 0,0,1 
-  // Good Docs where: 
+  // where the last row of the matrix will always be 0,0,1
+  // Good Docs where:
   //    https://github.com/heygrady/transform/wiki/calculating-2d-matrices
   Q.Matrix2D = Q.Class.extend({
     init: function(source) {
@@ -1390,7 +1390,7 @@ var Quintus = function Quintus(opts) {
       return this;
     },
 
-    // a * b = 
+    // a * b =
     //   [ [ a11*b11 + a12*b21 ], [ a11*b12 + a12*b22 ], [ a11*b31 + a12*b32 + a13 ] ,
     //   [ a21*b11 + a22*b21 ], [ a21*b12 + a22*b22 ], [ a21*b31 + a22*b32 + a23 ] ]
     multiply: function(matrix) {
@@ -1409,7 +1409,7 @@ var Quintus = function Quintus(opts) {
       return this;
     },
 
-    // Multiply this matrix by a rotation matrix rotated radians radians 
+    // Multiply this matrix by a rotation matrix rotated radians radians
     rotate: function(radians) {
       if(radians === 0) { return this; }
       var cos = Math.cos(radians),
@@ -1457,7 +1457,7 @@ var Quintus = function Quintus(opts) {
 
     // Memory Hoggy version
     transform: function(x,y) {
-      return [ x * this.m[0] + y * this.m[1] + this.m[2], 
+      return [ x * this.m[0] + y * this.m[1] + this.m[2],
                x * this.m[3] + y * this.m[4] + this.m[5] ];
     },
 
@@ -1474,7 +1474,7 @@ var Quintus = function Quintus(opts) {
     // Transform an array with an x and y property by this Matrix
     transformArr: function(inArr,outArr) {
       var x = inArr[0], y = inArr[1];
-      
+
       outArr[0] = x * this.m[0] + y * this.m[1] + this.m[2];
       outArr[1] = x * this.m[3] + y * this.m[4] + this.m[5];
 
@@ -1523,28 +1523,28 @@ var Quintus = function Quintus(opts) {
   return Q;
 };
 
-// Lastly, add in the `requestAnimationFrame` shim, if necessary. Does nothing 
+// Lastly, add in the `requestAnimationFrame` shim, if necessary. Does nothing
 // if `requestAnimationFrame` is already on the `window` object.
 (function() {
     var lastTime = 0;
     var vendors = ['ms', 'moz', 'webkit', 'o'];
     for(var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
         window.requestAnimationFrame = window[vendors[x]+'RequestAnimationFrame'];
-        window.cancelAnimationFrame = 
+        window.cancelAnimationFrame =
           window[vendors[x]+'CancelAnimationFrame'] || window[vendors[x]+'CancelRequestAnimationFrame'];
     }
- 
+
     if (!window.requestAnimationFrame) {
         window.requestAnimationFrame = function(callback, element) {
             var currTime = new Date().getTime();
             var timeToCall = Math.max(0, 16 - (currTime - lastTime));
-            var id = window.setTimeout(function() { callback(currTime + timeToCall); }, 
+            var id = window.setTimeout(function() { callback(currTime + timeToCall); },
               timeToCall);
             lastTime = currTime + timeToCall;
             return id;
         };
     }
- 
+
     if (!window.cancelAnimationFrame) {
         window.cancelAnimationFrame = function(id) {
             clearTimeout(id);

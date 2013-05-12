@@ -1,0 +1,19 @@
+{"icons":{
+	"sx":0,
+	"sy":0,
+	"cols":3,
+	"tilew":16,
+	"tileh":14
+},"health":{
+	"sx":0,
+	"sy":14,
+	"cols":5,
+	"tilew":24,
+	"tileh":24
+},"ammo":{
+	"sx":0,
+	"sy":38,
+	"cols":5,
+	"tilew":24,
+	"tileh":24
+}}

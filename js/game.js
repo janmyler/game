@@ -27,7 +27,10 @@
 			dataPath: 'assets/data/'
 		})
 		.setup({
-			maximize: true
+			maximize: 'touch',
+			// maximize: true,
+			width: 800,
+  			height: 600
 		})
 		.include([
 			'Sprites',
@@ -130,52 +133,9 @@
 	// 	}
 	// });
 
-	Q.scene("scene1",function(stage) {
-		var player = new Q.Player();
-		player.add("pistol");
-		player.add('2d, platformerControls');
-		player.on("fired", function() {
-			console.log('Player fired like a maniac!');
-		});
-		window.player = player;
-		stage.insert(new Q.Cloud({x: 100, y: 100, speed: 20, startX: 500, endX: -500}));
-		stage.insert(new Q.Cloud({x: 600, y: 50, speed: 10, startX: 500, endX: -500}));
-		stage.insert(new Q.Repeater({ asset: "waves.png", repeatY: false, speedX: 0.5, speedY: 0.5 }));
-		stage.insert(new Q.Block());
-		stage.insert(new Q.Block({y: 380, x: 400}));
-		stage.insert(new Q.Block({y: 300, x: 200, w: 200}));
-		stage.insert(new Q.Player({
-			color: 'gray',
-			y: 420,
-			x: 500,
-			w: 200,
-			points: [
-				[0, 100],
-				[70, 70],
-				[100, 0],
-				[70, -70],
-				[0, -100],
-				[-70, -70],
-				[-100, 0],
-				[-70, 70]
-			]
-		}));
-		stage.insert(player);
-	});
-
-	Q.scene("end", function(stage) {
-		var label = new Q.UI.Text({
-			x: Q.width / 2,
-			y: Q.height / 2,
-			label: stage.options.text
-		});
-
-		stage.insert(label);
-	});
-
-
 	// asset loading and game launch
 	Q.load([
+		'alert_sign.png',
 		'buildings.png',
 		'character.png',
 		'cloud1.png',
@@ -185,11 +145,14 @@
 		'mothership.png',
 		'stars.png',
 		'tiles.png',
+		'ui_icons.png',
+		'underground.png',
 		'waves.png',
 		'character.json',
+		'icons.json',
 		'level0.json',
 		'level1.json',
-		'music.mp3'
+		// 'music.mp3'
 	], function() {
 		document.getElementById('loading').style.display = 'none';
 		// config controls
@@ -213,6 +176,7 @@
 		// prepare the sheets
 		Q.sheet('tiles', 'tiles.png', { tilew: 64, tileh: 32 });
 		Q.compileSheets('character.png', 'character.json');
+		Q.compileSheets('ui_icons.png', 'icons.json');
 
 		// show the entry scene
 		Q.stageScene('bgScene', 0);

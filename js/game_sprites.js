@@ -1,5 +1,7 @@
 /* global Quintus:false */
 Quintus.GameSprites = function(Q) {
+
+	// Useful for paralax effect repeating only in the horizontal direction
 	Q.Repeater.extend('StaticRepeater', {
 		init: function(p) {
 			this._super(Q._defaults(p, {
@@ -49,6 +51,7 @@ Quintus.GameSprites = function(Q) {
 		}
 	});
 
+	// Cloud tween animation
 	Q.Sprite.extend('Cloud', {
 		firstTime: true,
 		init: function(p) {
@@ -84,12 +87,83 @@ Quintus.GameSprites = function(Q) {
 		}
 	});
 
+	// Static spaceship sprite
 	Q.Sprite.extend('Ship', {
 		init: function(p) {
 			this._super(p, {
 				asset: 'mothership.png',
 				type: Q.SPRITE_DEFAULT
 			});
+		}
+	});
+
+	// Ammo powerup animation & sprite
+	Q.animations('ammo', {
+		'bounce': { frames: [0, 1, 2, 1, 0, 3, 4, 3], rate: 1/4 }
+	});
+	Q.Sprite.extend('Ammo', {
+		init: function(p) {
+			this._super(p, {
+				sprite: 'ammo',
+				sheet: 'ammo',
+				type: Q.SPRITE_POWERUP
+			});
+
+			this.add('animation');
+			this.play('bounce');
+
+			// this.on('hit.sprite', function(collision) {
+				// TODO: code for collisions
+			// });
+		}
+	});
+
+	// Health powerup animation & sprite
+	Q.animations('health', {
+		'bounce': { frames: [0, 1, 2, 1, 0, 3, 4, 3], rate: 1/4 }
+	});
+	Q.Sprite.extend('Health', {
+		init: function(p) {
+			this._super(p, {
+				sprite: 'health',
+				sheet: 'health',
+				type: Q.SPRITE_POWERUP
+			});
+
+			this.add('animation');
+			this.play('bounce');
+
+			// this.on('hit.sprite', function(collision) {
+				// TODO: code for collisions
+			// });
+		}
+	});
+
+	// Healthbar sprite
+	Q.Sprite.extend('HealthBar', {
+		init: function(p) {
+			this._super(p, {
+				color: '#9e0b0f',
+				x: 60,
+				y: 0,
+				w: 100,
+				h: 14,
+				barWidth: 1,
+				type: Q.SPRITE_UI
+			});
+
+			this.on('update.health', function(health) {
+				this.p.barWidth = health / 100;
+			});
+		},
+		draw: function(ctx) {
+			// background first
+			ctx.fillStyle = '#fff';
+			ctx.fillRect(-this.p.cx, -this.p.cy, this.p.w, this.p.h);
+
+			// now the healthbar itself
+			ctx.fillStyle = this.p.color;
+			ctx.fillRect(-this.p.cx, -this.p.cy, this.p.w * this.p.barWidth, this.p.h);
 		}
 	});
 };
