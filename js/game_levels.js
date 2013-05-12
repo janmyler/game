@@ -176,7 +176,7 @@ Quintus.GameLevels = function(Q) {
 			w: 100,
 			size: 14,
 			color: '#8dc63f',
-			label: '0'
+			label: '12'
 		}));
 
 		// lives status

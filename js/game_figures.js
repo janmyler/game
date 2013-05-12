@@ -24,8 +24,10 @@ Quintus.GameFigures = function(Q) {
 				health: 100,
 				jumping: false,
 				burning: false,
+				fired: 1,
 				dead: false,
 				points: [[-15,-25],[15,-25],[15,35],[-15,35]],
+				type: Q.SPRITE_ACTIVE,
 				collisionMask: Q.SPRITE_DEFAULT | Q.SPRITE_ENEMY | Q.SPRITE_POWERUP
 			});
 
@@ -50,6 +52,9 @@ Quintus.GameFigures = function(Q) {
 				} else if (col.obj.isA('Ammo')) {
 					this.reload();
 					col.obj.destroy();
+				} else if (col.obj.isA('Enemy')) {
+					this.p.health -= 25;
+					this.updateState();
 				}
 			});
 
@@ -71,6 +76,13 @@ Quintus.GameFigures = function(Q) {
 			// triggers the jumping mode
 			if (Q.inputs['up'] && !this.p.jumping) {
 				this.p.jumping = true;
+			}
+
+			// fire as mad! (just five bullets per second)
+			this.p.fired += dt;
+			if(Q.inputs['fire'] && this.p.fired >= 0.2) {
+				this.fire();
+				this.p.fired = 0;
 			}
 
 			// moving animations
@@ -98,9 +110,8 @@ Quintus.GameFigures = function(Q) {
 		},
 		updateState: function() {
 			// update health
-			if (this.p.health > 0) {
-				Q('HealthBar', 1).first().trigger('update.health', this.p.health);
-			} else {
+			Q('HealthBar', 1).first().trigger('update.health', this.p.health);
+			if (this.p.health <= 0) {
 				// Zed's dead, baby... Zed's dead x___X
 				if (!this.p.dead) {
 					this.play('die_' + this.p.direction);
@@ -131,12 +142,16 @@ Quintus.GameFigures = function(Q) {
 				type: Q.SPRITE_ENEMY,
 				points: [[-18,-43],[18,-43],[18,48],[-18,48]],
 				collisionMask: Q.SPRITE_ACTIVE | Q.SPRITE_DEFAULT,
-				vx: Math.floor(Math.random() * 101) + 50
+				vx: 80
 			});
 
 			this.add('2d, aiBounce, animation');
-
-			// TODO: events... collisions etc
+			this.on('shot', function() {
+				this.p.health -= 50;
+				if (this.p.health <= 0) {
+					this.destroy();
+				}
+			});
 		},
 		step: function(dt) {
 			// moving animations
@@ -151,14 +166,18 @@ Quintus.GameFigures = function(Q) {
 	// Gun component
 	Q.component('gun', {
 		added: function() {
-			this.entity.p.ammo = 0;
+			this.entity.p.ammo = 12;
 		},
 		extend: {
 			fire: function() {
 				if (this.p.ammo > 0) {
 					this.p.ammo -= 1;
 					this.trigger('update.ammo');
-					console.log('fire!');
+					Q.stage(0).insert(new Q.GreenBullet({
+						x: this.p.x,
+						y: this.p.y,
+						left: this.p.direction === 'left'
+					}));
 				}
 			},
 			reload: function() {

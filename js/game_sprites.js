@@ -175,4 +175,46 @@ Quintus.GameSprites = function(Q) {
 			ctx.fillRect(-this.p.cx, -this.p.cy, this.p.w * this.p.barWidth, this.p.h);
 		}
 	});
+
+	// Character bullet sprite
+	Q.Sprite.extend('GreenBullet', {
+		init: function(p) {
+			this._super(p, {
+				color: '#a7de59',
+				w: 10,
+				h: 6,
+				left: true,
+				gravity: 0,
+				type: Q.SPRITE_PARTICLE,
+				collisionMask: Q.SPRITE_DEFAULT | Q.SPRITE_ENEMY
+			});
+
+			this.add('2d');
+
+			// hit when collides with wall/static sprites
+			this.on('hit', function() {
+				this.destroy();
+			});
+
+			// do stuff when collides with enemies
+			this.on('hit.sprite', function(col) {
+				if (col.obj.isA('Enemy')) {
+					col.obj.trigger('shot');
+				}
+			});
+		},
+		draw: function(ctx) {
+			// destroy when out of viewport
+			var boundary = Q.stage(0).viewport.centerX;
+			boundary += this.p.left ? (-Q.width / 2) : (Q.width / 2);
+
+			if (this.p.left && this.p.x < boundary || !this.p.left && this.p.x > boundary) {
+				this.destroy();
+			}
+
+			ctx.fillStyle = this.p.color;
+			this.p.x += this.p.left ? -5 : 5;
+			ctx.fillRect(-this.p.cx, -this.p.cy, this.p.w, this.p.h);
+		}
+	});
 };
