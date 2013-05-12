@@ -97,6 +97,23 @@ Quintus.GameSprites = function(Q) {
 		}
 	});
 
+	// Static flames sprite
+	Q.Sprite.extend('Flames', {
+		init: function(p) {
+			this._super(p, {
+				asset: 'flames.png',
+				type: Q.SPRITE_DEFAULT,
+				points: [[-35,16],[33,16],[33,15],[-35,15]]
+			});
+
+			this.on('hit.sprite', function(col) {
+				if (col.obj.isA('Character')) {
+					col.obj.trigger('burning');
+				}
+			});
+		}
+	});
+
 	// Ammo powerup animation & sprite
 	Q.animations('ammo', {
 		'bounce': { frames: [0, 1, 2, 1, 0, 3, 4, 3], rate: 1/4 }
@@ -111,10 +128,6 @@ Quintus.GameSprites = function(Q) {
 
 			this.add('animation');
 			this.play('bounce');
-
-			// this.on('hit.sprite', function(collision) {
-				// TODO: code for collisions
-			// });
 		}
 	});
 
@@ -132,10 +145,6 @@ Quintus.GameSprites = function(Q) {
 
 			this.add('animation');
 			this.play('bounce');
-
-			// this.on('hit.sprite', function(collision) {
-				// TODO: code for collisions
-			// });
 		}
 	});
 

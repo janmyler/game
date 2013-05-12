@@ -140,6 +140,7 @@
 		'character.png',
 		'cloud1.png',
 		'cloud2.png',
+		'flames.png',
 		'moon.jpg',
 		'mountains.png',
 		'mothership.png',

@@ -4,8 +4,12 @@ Quintus.GameFigures = function(Q) {
 	Q.animations('character', {
 		'run_right': { frames: [2, 3], rate: 1/4 },
 		'run_left': { frames: [0, 1], rate: 1/4 },
-		'stand_right': { frames: [2], rate: 1/4 },
-		'stand_left': { frames: [0], rate: 1/4 }
+		'stand_right': { frames: [2], loop: false },
+		'stand_left': { frames: [0], loop: false },
+		'run_right_fire': { frames: [6, 7], rate: 1/4 },
+		'run_left_fire': { frames: [4, 5], rate: 1/4 },
+		'stand_right_fire': { frames: [6], loop: false },
+		'stand_left_fire': { frames: [4], loop: false }
 		// TODO: 'die': {}
 	});
 
@@ -18,6 +22,7 @@ Quintus.GameFigures = function(Q) {
 				gravity: 0.4,
 				health: 100,
 				jumping: false,
+				burning: false,
 				points: [[-15,-25],[15,-25],[15,35],[-15,35]],
 				collisionMask: Q.SPRITE_DEFAULT | Q.SPRITE_ENEMY | Q.SPRITE_POWERUP
 			});
@@ -26,7 +31,8 @@ Quintus.GameFigures = function(Q) {
 
 			// burning callback
 			this.on('burning', function() {
-				this.p.health -= 0.1;
+				this.p.health -= 0.5;
+				this.p.burning = true;
 				this.updateState();
 			});
 
@@ -39,6 +45,9 @@ Quintus.GameFigures = function(Q) {
 					this.p.health = 100;
 					this.updateState();
 					col.obj.destroy();
+				} else if (col.obj.isA('Ammo')) {
+					this.reload();
+					col.obj.destroy();
 				}
 			});
 
@@ -50,16 +59,20 @@ Quintus.GameFigures = function(Q) {
 			if (Q.inputs['up'] && !this.p.jumping) {
 				this.p.jumping = true;
 			}
+
 			// moving animations
 			if (this.p.jumping) {
 				this.play('stand_' + this.p.direction);
 			} else if (this.p.vx > 0) {
-				this.play('run_right');
+				this.play('run_right' + (this.p.burning ? '_fire' : ''));
 			} else if (this.p.vx < 0) {
-				this.play('run_left');
+				this.play('run_left' + (this.p.burning ? '_fire' : ''));
 			} else {
-				this.play('stand_' + this.p.direction);
+				this.play('stand_' + this.p.direction + (this.p.burning ? '_fire' : ''));
 			}
+
+			// reset burning mode
+			this.p.burning = false;
 
 			// y axis check (when fallin' down as a rock)
 			if (this.p.y >= 1200) {

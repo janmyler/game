@@ -1,5 +1,6 @@
 {"character": {
 	"cols": 4,
 	"tilew": 30,
-	"tileh": 50
+	"tileh": 50,
+	"frames": 8
 }}

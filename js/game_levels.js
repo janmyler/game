@@ -44,16 +44,6 @@ Quintus.GameLevels = function(Q) {
 
 		tiles.collidableTile = function(tileNum) {
 			var cTiles = [0, 1, 8, 9, 11, 15, 17, 19, 20, 21, 22, 23, 26, 27, 28, 29, 30, 31, 32, 33, 34];
-
-			// check for fire tiles collisions
-			// FIXME: it's kinda buggy
-			if (tileNum === 36 || tileNum === 37) {
-				Q('Character').first().trigger('burning');
-			}
-
-			// check for the AI invisible blocks collisions
-
-
 			return cTiles.indexOf(tileNum) < 0;
 		};
 
@@ -219,6 +209,9 @@ Quintus.GameLevels = function(Q) {
 		// signs'n'stuff
 		stage.insert(new Q.Sprite({ x: Q.getX(tiles, 24), y: Q.getY(tiles, 25), asset: 'alert_sign.png', type: Q.SPRITE_UI }));
 		stage.insert(new Q.Ship({ x: Q.getX(tiles, 11) + 0.5 * tiles.p.tileW, y: Q.getY(tiles, 20) + 0.5 * tiles.p.tileH }));
+		stage.insert(new Q.Flames(Q.getPos(tiles, 27, 28)));
+		stage.insert(new Q.Flames(Q.getPos(tiles, 28, 28)));
+		stage.insert(new Q.Flames(Q.getPos(tiles, 29, 28)));
 
 		// character
 		Q.addFigure(stage, character);
