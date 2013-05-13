@@ -162,7 +162,7 @@ Quintus.GameSprites = function(Q) {
 			});
 
 			this.on('update.health', function(health) {
-				this.p.barWidth = health / 100;
+				this.p.barWidth = (health / 100 > 0) ? health / 100 : 0;
 			});
 		},
 		draw: function(ctx) {
@@ -199,6 +199,48 @@ Quintus.GameSprites = function(Q) {
 			// do stuff when collides with enemies
 			this.on('hit.sprite', function(col) {
 				if (col.obj.isA('Enemy')) {
+					col.obj.trigger('shot');
+				}
+			});
+		},
+		draw: function(ctx) {
+			// destroy when out of viewport
+			var boundary = Q.stage(0).viewport.centerX;
+			boundary += this.p.left ? (-Q.width / 2) : (Q.width / 2);
+
+			if (this.p.left && this.p.x < boundary || !this.p.left && this.p.x > boundary) {
+				this.destroy();
+			}
+
+			ctx.fillStyle = this.p.color;
+			this.p.x += this.p.left ? -5 : 5;
+			ctx.fillRect(-this.p.cx, -this.p.cy, this.p.w, this.p.h);
+		}
+	});
+
+	// Enemy bullet sprite
+	Q.Sprite.extend('RedBullet', {
+		init: function(p) {
+			this._super(p, {
+				color: '#f00',
+				w: 8,
+				h: 6,
+				left: true,
+				gravity: 0,
+				type: Q.SPRITE_PARTICLE,
+				collisionMask: Q.SPRITE_DEFAULT | Q.SPRITE_ACTIVE
+			});
+
+			this.add('2d');
+
+			// hit when collides with wall/static sprites
+			this.on('hit', function() {
+				this.destroy();
+			});
+
+			// do stuff when collides with enemies
+			this.on('hit.sprite', function(col) {
+				if (col.obj.isA('Character')) {
 					col.obj.trigger('shot');
 				}
 			});

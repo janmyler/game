@@ -53,9 +53,15 @@ Quintus.GameFigures = function(Q) {
 					this.reload();
 					col.obj.destroy();
 				} else if (col.obj.isA('Enemy')) {
-					this.p.health -= 25;
+					this.p.health -= 1;
 					this.updateState();
 				}
+			});
+
+			// ouch! it hurts
+			this.on('shot', function() {
+				this.p.health -= 20;
+				this.updateState();
 			});
 
 			// stops the jumping mode
@@ -128,8 +134,8 @@ Quintus.GameFigures = function(Q) {
 	Q.animations('enemy', {
 		'walk_right': { frames: [12, 13, 14, 15, 16, 17], rate: 1/3 },
 		'walk_left': { frames: [6, 7, 8, 9, 10, 11], rate: 1/3 },
-		'right_fire': { frames: [1], loop: false },
-		'left_fire': { frames: [0], loop: false }
+		'shoot_right': { frames: [1], loop: false },
+		'shoot_left': { frames: [0], loop: false }
 	});
 
 	// Enemy class
@@ -140,26 +146,60 @@ Quintus.GameFigures = function(Q) {
 				sprite: 'enemy',
 				sheet: 'enemy',
 				type: Q.SPRITE_ENEMY,
+				fired: Math.random(),
 				points: [[-18,-43],[18,-43],[18,48],[-18,48]],
 				collisionMask: Q.SPRITE_ACTIVE | Q.SPRITE_DEFAULT,
 				vx: 80
 			});
 
 			this.add('2d, aiBounce, animation');
+
 			this.on('shot', function() {
-				this.p.health -= 50;
+				this.p.health -= 25;
 				if (this.p.health <= 0) {
 					this.destroy();
 				}
 			});
+			this.on('hit', function(col) {
+				// prevents bouncing off the bullet or character
+				if (col.obj.isA('GreenBullet') || col.obj.isA('Character')) {
+					if (col.normalX > 0.3) {
+						this.p.vx *= -1;
+					}
+					if (col.normalX < -0.3) {
+						this.p.vx *= -1;
+					}
+				}
+			});
 		},
 		step: function(dt) {
-			// moving animations
-			if (this.p.vx > 0) {
-				this.play('walk_right');
-			} else if (this.p.vx < 0) {
-				this.play('walk_left');
+			// time to shoot?
+			this.p.fired += dt;
+			if (this.p.fired >= 2) {
+				this.fire();
+				this.p.fired = 0;
 			}
+
+			// moving animations
+			if (this.p.fired >= 0.3) {
+				if (this.p.vx > 0) {
+					this.play('walk_right');
+				} else if (this.p.vx < 0) {
+					this.play('walk_left');
+				}
+			} else {
+				this.p.x -= this.p.vx * dt;
+			}
+		},
+		fire: function() {
+			var left = this.p.vx < 0;
+			this.play('shoot_' + (left ? 'left' : 'right'));
+
+			Q.stage(0).insert(new Q.RedBullet({
+				x: this.p.x,
+				y: this.p.y,
+				left: left
+			}));
 		}
 	});
 
