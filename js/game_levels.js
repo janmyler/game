@@ -56,10 +56,9 @@ Quintus.GameLevels = function(Q) {
 				loop = true;
 				break;
 			case 'game_music':
+				Q.audio.stop('game_music.mp3');
 				Q.audio.stop('menu_music.mp3');
 				loop = true;
-				break;
-			case 'whatever':
 				break;
 		}
 
@@ -85,9 +84,7 @@ Quintus.GameLevels = function(Q) {
 
 			Q.sound(name);
 		}
-	}
-
-
+	};
 
 	// creates the collision layer for the specified level
 	Q.createLevel = function(level) {
@@ -169,12 +166,12 @@ Quintus.GameLevels = function(Q) {
 	Q.scene('helpMenu', function(stage) {
 		var cont = stage.insert(new Q.UI.Container({
 			x: Q.width / 2,
-			y: Q.height / 6,
+			y: Q.height / 3,
 			fill: 'rgba(0,0,0,.4)',
 			border: 1
 		}));
 
-		var helpKeyboard = 'Move: arrow keys\nFire: space\n\nFullscreen: F\nMute: M',
+		var helpKeyboard = 'Move: arrow keys\nFire: space\n\nFullscreen: F\nMute: M\nPause: P',
 			helpTouch = 'Move: joypad\nFire: F\nJump: J';
 
 		cont.insert(new Q.UI.Text({
@@ -194,6 +191,23 @@ Quintus.GameLevels = function(Q) {
 
 		// add paddings
 		cont.fit(20, 30);
+	});
+
+	// Pause scene
+	Q.scene('pauseMenu', function(stage) {
+		var cont = stage.insert(new Q.UI.Container({
+			x: Q.width / 2,
+			y: Q.height / 2,
+			w: Q.width / 2,
+			h: Q.height / 2,
+			fill: 'rgba(0,0,0,.4)',
+			border: 1
+		}));
+
+		cont.insert(new Q.UI.Text({
+			color: '#fff',
+			label: 'Game Paused'
+		}));
 	});
 
 	// HUD scene

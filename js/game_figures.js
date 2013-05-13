@@ -49,9 +49,11 @@ Quintus.GameFigures = function(Q) {
 					this.p.health = 100;
 					this.updateState();
 					col.obj.destroy();
+					Q.sound('character_heal');
 				} else if (col.obj.isA('Ammo')) {
 					this.reload();
 					col.obj.destroy();
+					Q.sound('character_reload');
 				} else if (col.obj.isA('Enemy')) {
 					this.p.health -= 1;
 					this.updateState();
@@ -69,6 +71,7 @@ Quintus.GameFigures = function(Q) {
 
 			// what to do when dead
 			this.on('died', function() {
+				Q.sound('character_death');
 				Q.stage().pause();
 				Q.stageScene('gameOver', 2);
 			});
@@ -82,6 +85,7 @@ Quintus.GameFigures = function(Q) {
 			// triggers the jumping mode
 			if (Q.inputs['up'] && !this.p.jumping) {
 				this.p.jumping = true;
+				Q.sound('character_jump');
 			}
 
 			// fire as mad! (just five bullets per second)
@@ -157,6 +161,7 @@ Quintus.GameFigures = function(Q) {
 			this.on('shot', function() {
 				this.p.health -= 35;
 				if (this.p.health <= 0) {
+					Q.sound('robot_death_' + Math.ceil(Math.random() * 2));
 					this.destroy();
 				}
 			});
@@ -193,13 +198,26 @@ Quintus.GameFigures = function(Q) {
 		},
 		fire: function() {
 			var left = this.p.vx < 0;
+
+			// animation
 			this.play('shoot_' + (left ? 'left' : 'right'));
+
+			// sound
+			if (this.visible()) {
+				Q.sound('robot_laser_' + Math.ceil(Math.random() * 2));
+			}
 
 			Q.stage(0).insert(new Q.RedBullet({
 				x: this.p.x,
 				y: this.p.y,
 				left: left
 			}));
+		},
+		visible: function() {
+			var min = Q.stage(0).viewport.centerX - Q.width / 2,
+				max = Q.stage(0).viewport.centerX + Q.width / 2;
+
+			return this.p.x >= min && this.p.x <= max;
 		}
 	});
 
@@ -213,11 +231,14 @@ Quintus.GameFigures = function(Q) {
 				if (this.p.ammo > 0) {
 					this.p.ammo -= 1;
 					this.trigger('update.ammo');
+
 					Q.stage(0).insert(new Q.GreenBullet({
 						x: this.p.x,
 						y: this.p.y,
 						left: this.p.direction === 'left'
 					}));
+
+					Q.sound('character_shoot');
 				}
 			},
 			reload: function() {

@@ -2,7 +2,7 @@
 (function() {
 	'use strict';
 
-	// fullscreen/mute toggle listener
+	// fullscreen/mute/pause toggle listener
 	window.addEventListener('keydown', function(e) {
 		if (e.keyCode === 70) { // f key
 			var elem = document.getElementById('quintus');
@@ -17,6 +17,18 @@
 			}
 		} else if (e.keyCode === 77) { // m key
 			Q.state.set('mute', !Q.state.get('mute'));
+		} else if (e.keyCode === 80) { // p key
+			if (Q.state.get('paused')) {
+				Q.stage().unpause();
+				Q.stageScene(null, 3);
+				Q.state.set('mute', false);
+				Q.state.set('paused', false);
+			} else {
+				Q.stage().pause();
+				Q.stageScene('pauseMenu', 3);
+				Q.state.set('mute', true);
+				Q.state.set('paused', true);
+			}
 		}
 	}, false);
 
@@ -50,6 +62,7 @@
 
 	// loading of assets and game launch
 	Q.load([
+		// images
 		'alert_sign.png',
 		'buildings.png',
 		'character.png',
@@ -65,13 +78,26 @@
 		'ui_icons.png',
 		'underground.png',
 		'waves.png',
+
+		// configs
 		'character.json',
 		'enemy.json',
 		'icons.json',
 		'level0.json',
 		'level1.json',
+
+		// music & sounds
 		'game_music.mp3',
-		'menu_music.mp3'
+		'menu_music.mp3',
+		'robot_death_1.mp3',
+		'robot_death_2.mp3',
+		'robot_laser_1.mp3',
+		'robot_laser_2.mp3',
+		'character_shoot.mp3',
+		'character_reload.mp3',
+		'character_heal.mp3',
+		'character_jump.mp3',
+		'character_death.mp3'
 	], function() {
 		document.getElementById('loading').style.display = 'none';
 		// config controls
@@ -100,6 +126,7 @@
 
 		// implicitly enable sounds
 		Q.state.set('mute', false);
+		Q.state.set('paused', false);
 
 		// show the entry scene
 		Q.stageScene('bgScene', 0);
