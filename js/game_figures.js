@@ -142,20 +142,20 @@ Quintus.GameFigures = function(Q) {
 	Q.Sprite.extend('Enemy', {
 		init: function(p) {
 			this._super(p, {
+				vx: 80,
 				health: 100,
 				sprite: 'enemy',
 				sheet: 'enemy',
 				type: Q.SPRITE_ENEMY,
 				fired: Math.random(),
 				points: [[-18,-43],[18,-43],[18,48],[-18,48]],
-				collisionMask: Q.SPRITE_ACTIVE | Q.SPRITE_DEFAULT,
-				vx: 80
+				collisionMask: Q.SPRITE_ACTIVE | Q.SPRITE_DEFAULT
 			});
 
 			this.add('2d, aiBounce, animation');
 
 			this.on('shot', function() {
-				this.p.health -= 25;
+				this.p.health -= 35;
 				if (this.p.health <= 0) {
 					this.destroy();
 				}

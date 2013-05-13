@@ -2,21 +2,21 @@
 (function() {
 	'use strict';
 
-	// fullscreen toggle listener
+	// fullscreen/mute toggle listener
 	window.addEventListener('keydown', function(e) {
-		if (e.keyCode !== 70) {	// f key
-			return;
-		}
+		if (e.keyCode === 70) { // f key
+			var elem = document.getElementById('quintus');
 
-		var elem = document.getElementById('quintus');
-
-		// request fullscreen if available
-		if (elem.requestFullScreen) {
-			elem.requestFullScreen();
-		} else if (elem.mozRequestFullScreen) {
-			elem.mozRequestFullScreen();
-		} else if (elem.webkitRequestFullScreen) {
-			elem.webkitRequestFullScreen();
+			// request fullscreen if available
+			if (elem.requestFullScreen) {
+				elem.requestFullScreen();
+			} else if (elem.mozRequestFullScreen) {
+				elem.mozRequestFullScreen();
+			} else if (elem.webkitRequestFullScreen) {
+				elem.webkitRequestFullScreen();
+			}
+		} else if (e.keyCode === 77) { // m key
+			Q.state.set('mute', !Q.state.get('mute'));
 		}
 	}, false);
 
@@ -48,22 +48,6 @@
 		.enableSound()
 		.touch();
 
-	/*Q.Sprite.extend("Block", {
-		init: function(p) {
-			this._super(p, {
-				color: "gray",
-				w: 500,
-				h: 20,
-				x: 50,
-				y: 400
-			});
-		},
-		draw: function(ctx) {
-			ctx.fillStyle = this.p.color;
-			ctx.fillRect(-this.p.cx, -this.p.cy, this.p.w, this.p.h);
-		}
-	});*/
-
 	// loading of assets and game launch
 	Q.load([
 		'alert_sign.png',
@@ -85,8 +69,9 @@
 		'enemy.json',
 		'icons.json',
 		'level0.json',
-		'level1.json'
-		// 'music.mp3'
+		'level1.json',
+		'game_music.mp3',
+		'menu_music.mp3'
 	], function() {
 		document.getElementById('loading').style.display = 'none';
 		// config controls
@@ -113,13 +98,19 @@
 		Q.compileSheets('enemy.png', 'enemy.json');
 		Q.compileSheets('ui_icons.png', 'icons.json');
 
+		// implicitly enable sounds
+		Q.state.set('mute', false);
+
 		// show the entry scene
 		Q.stageScene('bgScene', 0);
 		Q.stageScene('mainMenu', 1);
+
+		// sound muting callback
+		Q.state.on('change.mute', Q.muting);
 	}, {
 		progressCallback: function(loaded, total) {
 			var elem = document.getElementById('loading-progress');
-			elem.style.width = Math.floor(loaded/total*100) + '%';
+			elem.style.width = Math.floor(loaded / total * 100) + '%';
 		}
 	});
 

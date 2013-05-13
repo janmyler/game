@@ -20,7 +20,9 @@ Quintus.GameLevels = function(Q) {
 
 	// resets a game state
 	Q.initGame = function() {
-		Q.reset();
+		var mute = Q.state.get('mute');
+		// Q.reset();
+		Q.state.set('mute', mute);
 		Q.state.set('lives', 3);
 		Q.state.set('level', 1);
 	};
@@ -40,6 +42,52 @@ Quintus.GameLevels = function(Q) {
 			stage.insert(new Q.Flames(Q.getPos(tiles, positions[i][0], positions[i][1])));
 		}
 	};
+
+	// wrapper for sound playing
+	Q.sound = function(name) {
+		if (Q.state.get('mute')) {
+			return;
+		}
+
+		var loop = false;
+		switch (name) {
+			case 'menu_music':
+				Q.audio.stop('game_music.mp3');
+				loop = true;
+				break;
+			case 'game_music':
+				Q.audio.stop('menu_music.mp3');
+				loop = true;
+				break;
+			case 'whatever':
+				break;
+		}
+
+		// we wanna hear it! \(^a^)/
+		Q.audio.play(name + '.mp3', { loop: loop });
+	};
+
+	// mute/unmute handler
+	Q.muting = function() {
+		if (Q.state.get('mute')) {
+			// stop everything playing
+			Q.audio.stop();
+		} else {
+			// start over the music
+			var name = '';
+			switch (Q.state.get('level')) {
+				case 0:
+					name = 'menu_music';
+					break;
+				case 1:
+					name = 'game_music';
+			}
+
+			Q.sound(name);
+		}
+	}
+
+
 
 	// creates the collision layer for the specified level
 	Q.createLevel = function(level) {
@@ -70,6 +118,10 @@ Quintus.GameLevels = function(Q) {
 		stage.insert(new Q.Repeater({ asset: "stars.png", speedX: 0.2, speedY: 1 }));
 		stage.collisionLayer(tiles);
 		Q.addFigure(stage, character);
+		Q.state.set('level', 0);
+
+		// play audio
+		Q.sound('menu_music');
 	});
 
 	// Main menu scene
@@ -111,9 +163,6 @@ Quintus.GameLevels = function(Q) {
 		butHelp.on('click', function() {
 			Q.stageScene('helpMenu', 1);
 		});
-
-		// play audio
-		// Q.audio.play('music.mp3', { loop: true });
 	});
 
 	// Help scene
@@ -125,7 +174,7 @@ Quintus.GameLevels = function(Q) {
 			border: 1
 		}));
 
-		var helpKeyboard = 'Move: arrow keys\nFire: space\nFullscreen: F',
+		var helpKeyboard = 'Move: arrow keys\nFire: space\n\nFullscreen: F\nMute: M',
 			helpTouch = 'Move: joypad\nFire: F\nJump: J';
 
 		cont.insert(new Q.UI.Text({
@@ -229,6 +278,9 @@ Quintus.GameLevels = function(Q) {
 		// powerups
 		stage.insert(new Q.Health(Q.getPos(tiles, 32, 27)));
 		stage.insert(new Q.Ammo(Q.getPos(tiles, 35, 20)));
+
+		// music
+		Q.sound('game_music');
 	});
 
 	// TODO: further levels
